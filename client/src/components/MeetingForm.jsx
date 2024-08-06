@@ -88,10 +88,10 @@ function MeetingForm({ onAddMeeting }) {
               label="Time Zone"
             >
               <MenuItem value="UTC">UTC</MenuItem>
-              <MenuItem value="America/New_York">America/New_York (Eastern)</MenuItem>
+              <MenuItem value="America/New_York">America/New York (Eastern)</MenuItem>
               <MenuItem value="America/Chicago">America/Chicago (Central)</MenuItem>
               <MenuItem value="America/Denver">America/Denver (Mountain)</MenuItem>
-              <MenuItem value="America/Los_Angeles">America/Los_Angeles (Pacific)</MenuItem>
+              <MenuItem value="America/Los_Angeles">America/Los Angeles (Pacific)</MenuItem>
             </Select>
           </FormControl>
         </Grid>
