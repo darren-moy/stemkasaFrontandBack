@@ -62,4 +62,26 @@ router.post('/createMeeting', async (req, res) => {
 });
 
 
+// API endpoint to delete a meeting
+router.delete('/meetings/:id', async (req, res) => {
+    const meetingId = req.params.id;
+
+    try {
+        const token = await tokenManager.getToken();
+
+        // Request to Zoom API to delete the meeting
+        await axios.delete(`https://api.zoom.us/v2/meetings/${meetingId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        res.status(204).send(); // No content
+    } catch (error) {
+        console.error('Error deleting meeting:', error.response ? error.response.data : error.message);
+        res.status(500).json({ error: 'Error deleting meeting' });
+    }
+});
+
+
 module.exports = router;

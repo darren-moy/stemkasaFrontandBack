@@ -42,7 +42,7 @@ function MeetingList({ meetings, onDelete }) {
                 <Button variant="contained" href={meeting.join_url} target="_blank">
                   Join Meeting
                 </Button>
-                <IconButton aria-label="delete" onClick={() => onDelete(index)}>
+                <IconButton aria-label="delete" onClick={() => onDelete(meeting.id)}>
                   <DeleteIcon />
                 </IconButton>
               </Box>
