@@ -1,7 +1,11 @@
-// MeetingForm.jsx
 import React, { useState } from "react";
 import { TextField, Button } from "@mui/material";
-import { formatTimeTo12Hour } from "./helpers";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 function MeetingForm({ onAddMeeting }) {
   const [title, setTitle] = useState("");
@@ -11,6 +15,10 @@ function MeetingForm({ onAddMeeting }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (title && date && time) {
+      // Combine date and time, then convert it to UTC
+      const localDateTime = dayjs(`${date}T${time}`).tz('America/New_York');
+      const utcDateTime = localDateTime.utc().format();
+
       const response = await fetch('/api/createMeeting', {
         method: 'POST',
         headers: {
@@ -18,7 +26,7 @@ function MeetingForm({ onAddMeeting }) {
         },
         body: JSON.stringify({
           topic: title,
-          start_time: `${date}T${time}`,
+          start_time: utcDateTime,
           type: 2,
           duration: 60, // Example duration
           timezone: 'UTC',
