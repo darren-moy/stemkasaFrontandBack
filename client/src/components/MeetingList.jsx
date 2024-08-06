@@ -17,13 +17,13 @@ function MeetingList({ meetings, onDelete }) {
           <Paper elevation={3} sx={{ padding: 2 }}>
             <Box>
               <Typography variant="subtitle1" component="h5">
-                {meeting.title}
+                {meeting.topic || "No Title"}
               </Typography>
               <Typography variant="body2" component="p">
-                {meeting.date}
+                {new Date(meeting.start_time).toLocaleString()}
               </Typography>
               <Typography variant="body2" component="p">
-                {meeting.time}
+                {meeting.agenda || "No Agenda"}
               </Typography>
               <Box
                 sx={{
@@ -39,7 +39,9 @@ function MeetingList({ meetings, onDelete }) {
                   marginTop: 1,
                 }}
               >
-                <Button variant="contained">Join Meeting</Button>
+                <Button variant="contained" href={meeting.join_url} target="_blank">
+                  Join Meeting
+                </Button>
                 <IconButton aria-label="delete" onClick={() => onDelete(index)}>
                   <DeleteIcon />
                 </IconButton>

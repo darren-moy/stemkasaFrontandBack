@@ -28,6 +28,7 @@ function MeetingForm({ onAddMeeting }) {
       });
 
       const newMeeting = await response.json();
+      console.log('New Meeting: ', newMeeting);
       onAddMeeting(newMeeting);  // Add the new meeting to the list
       setTitle("");
       setDate("");
