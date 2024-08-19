@@ -1,8 +1,5 @@
 Integration of Zoom API 
 
-Commands to start program:
-cd client 
-npm run build 
+How to start program:
+npm sstart
 
-cd ../server
-node start.js
