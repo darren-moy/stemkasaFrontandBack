@@ -13,6 +13,8 @@ router.get('/meetings', async (req, res) => {
                 'Authorization': `Bearer ${token}`
             }
         });
+
+        const meetings = response.data.meetings || [];
         console.log('Meetings response:', response.data);
         res.json(response.data);
     } catch (error) {
@@ -23,7 +25,7 @@ router.get('/meetings', async (req, res) => {
 
 // API endpoint to create meetings
 router.post('/createMeeting', async (req, res) => {
-    const { topic, start_time, type, duration, timezone, agenda, attendees } = req.body;
+    const { topic, start_time, type, duration, timezone, agenda, attendees, registrantsConfirmationEmail } = req.body;
 
     try {
         const token = await tokenManager.getToken();
@@ -45,8 +47,10 @@ router.post('/createMeeting', async (req, res) => {
                 use_pmi: false,
                 approval_type: 0,
                 audio: 'both',
-                auto_recording: 'cloud'
-            }
+                auto_recording: 'cloud',
+                registrants_confirmation_email: true // Include the confirmation email option
+            },
+            invitees: attendees.map(attendee => ({ email: attendee.email })) // Include invitees
         }, {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -54,13 +58,17 @@ router.post('/createMeeting', async (req, res) => {
             }
         });
 
-        res.json(response.data);
+        const meeting = response.data;
+
+        // Log or store meeting and invitees if needed
+        console.log('New Meeting Created:', meeting);
+
+        res.json(meeting);
     } catch (error) {
         console.error('Error creating meeting:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Error creating meeting' });
     }
 });
-
 
 // API endpoint to delete a meeting
 router.delete('/meetings/:id', async (req, res) => {
@@ -82,6 +90,5 @@ router.delete('/meetings/:id', async (req, res) => {
         res.status(500).json({ error: 'Error deleting meeting' });
     }
 });
-
 
 module.exports = router;
