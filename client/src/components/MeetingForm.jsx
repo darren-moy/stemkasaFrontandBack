@@ -13,21 +13,10 @@ function MeetingForm({ onAddMeeting }) {
   const [time, setTime] = useState("");
   const [duration, setDuration] = useState(60); // Default to 60 minutes
   const [tz, setTz] = useState("UTC");
-  const [emails, setEmails] = useState([""]); // Initialize with one empty string for the first email input
-
-  const handleEmailChange = (index, event) => {
-    const newEmails = [...emails];
-    newEmails[index] = event.target.value;
-    setEmails(newEmails);
-  };
-
-  const addEmailField = () => {
-    setEmails([...emails, ""]);
-  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (title && date && time && tz && duration && emails.length > 0) {
+    if (title && date && time && tz && duration) {
       // Combine date and time, then convert it to UTC based on the selected time zone
       const localDateTime = dayjs(`${date}T${time}`).tz(tz);
       const utcDateTime = localDateTime.utc().format();
@@ -44,7 +33,6 @@ function MeetingForm({ onAddMeeting }) {
           duration: duration,
           timezone: tz,
           agenda: 'Meeting agenda',
-          attendees: emails.filter(email => email).map(email => ({ email })), // Map emails to attendee objects
         }),
       });
 
@@ -56,7 +44,6 @@ function MeetingForm({ onAddMeeting }) {
       setTime("");
       setDuration(60);
       setTz("UTC");
-      setEmails([""]); // Reset email inputs
     }
   };
 
@@ -118,21 +105,6 @@ function MeetingForm({ onAddMeeting }) {
           />
         </Grid>
       </Grid>
-      {emails.map((email, index) => (
-        <TextField
-          key={index}
-          label={`Attendee Email ${index + 1}`}
-          type="email"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={email}
-          onChange={(e) => handleEmailChange(index, e)}
-        />
-      ))}
-      <Button onClick={addEmailField} variant="outlined" color="primary" style={{ marginTop: '10px' }}>
-        Add Another Email
-      </Button>
       <Box marginTop={2}>
         <Button type="submit" variant="contained" color="primary">
           Add Meeting

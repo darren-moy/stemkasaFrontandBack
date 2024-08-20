@@ -25,7 +25,7 @@ router.get('/meetings', async (req, res) => {
 
 // API endpoint to create meetings
 router.post('/createMeeting', async (req, res) => {
-    const { topic, start_time, type, duration, timezone, agenda, attendees, registrantsConfirmationEmail } = req.body;
+    const { topic, start_time, type, duration, timezone, agenda, registrantsConfirmationEmail } = req.body;
 
     try {
         const token = await tokenManager.getToken();
@@ -48,9 +48,9 @@ router.post('/createMeeting', async (req, res) => {
                 approval_type: 0,
                 audio: 'both',
                 auto_recording: 'cloud',
-                registrants_confirmation_email: true // Include the confirmation email option
+                registrants_confirmation_email: true,
+                registrants_email_notification: true
             },
-            invitees: attendees.map(attendee => ({ email: attendee.email })) // Include invitees
         }, {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -60,7 +60,7 @@ router.post('/createMeeting', async (req, res) => {
 
         const meeting = response.data;
 
-        // Log or store meeting and invitees if needed
+        // Log or store meeting if needed
         console.log('New Meeting Created:', meeting);
 
         res.json(meeting);
