@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { TextField, Button, MenuItem, Select, InputLabel, FormControl, Box, Grid } from "@mui/material";
+import { TextField, Button, MenuItem, Select, InputLabel, FormControl, Box, Grid, IconButton } from "@mui/material";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -11,12 +13,28 @@ function MeetingForm({ onAddMeeting }) {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [duration, setDuration] = useState(60); // Default to 60 minutes
+  const [duration, setDuration] = useState(60); // meeting defaulted to 60 minutes
   const [tz, setTz] = useState("UTC");
+  const [registrants, setRegistrants] = useState([{ email: "", firstName: "", lastName: "" }]);
+
+  const handleAddRegistrant = () => {
+    setRegistrants([...registrants, { email: "", firstName: "", lastName: "" }]);
+  };
+
+  const handleRemoveRegistrant = (index) => {
+    const newRegistrants = registrants.filter((_, i) => i !== index);
+    setRegistrants(newRegistrants);
+  };
+
+  const handleRegistrantChange = (index, field, value) => {
+    const newRegistrants = [...registrants];
+    newRegistrants[index][field] = value;
+    setRegistrants(newRegistrants);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (title && date && time && tz && duration) {
+    if (title && date && time && tz && duration && registrants.length > 0) {
       // Combine date and time, then convert it to UTC based on the selected time zone
       const localDateTime = dayjs(`${date}T${time}`).tz(tz);
       const utcDateTime = localDateTime.utc().format();
@@ -33,6 +51,7 @@ function MeetingForm({ onAddMeeting }) {
           duration: duration,
           timezone: tz,
           agenda: 'Meeting agenda',
+          registrants: registrants.filter(registrant => registrant.email !== ""), // Pass the registrants list to the API
         }),
       });
 
@@ -44,6 +63,7 @@ function MeetingForm({ onAddMeeting }) {
       setTime("");
       setDuration(60);
       setTz("UTC");
+      setRegistrants([{ email: "", firstName: "", lastName: "" }]); // Clear the registrants input fields
     }
   };
 
@@ -105,6 +125,48 @@ function MeetingForm({ onAddMeeting }) {
           />
         </Grid>
       </Grid>
+      <Box marginTop={2}>
+        <h4>Registrants</h4>
+        {registrants.map((registrant, index) => (
+          <Grid container spacing={2} key={index}>
+            <Grid item xs={4}>
+              <TextField
+                label={`Email ${index + 1}`}
+                variant="outlined"
+                fullWidth
+                value={registrant.email}
+                onChange={(e) => handleRegistrantChange(index, "email", e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <TextField
+                label="First Name"
+                variant="outlined"
+                fullWidth
+                value={registrant.firstName}
+                onChange={(e) => handleRegistrantChange(index, "firstName", e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <TextField
+                label="Last Name"
+                variant="outlined"
+                fullWidth
+                value={registrant.lastName}
+                onChange={(e) => handleRegistrantChange(index, "lastName", e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <IconButton onClick={() => handleRemoveRegistrant(index)}>
+                <RemoveIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
+        ))}
+        <Button onClick={handleAddRegistrant} variant="outlined" color="primary" startIcon={<AddIcon />}>
+          Add Registrant
+        </Button>
+      </Box>
       <Box marginTop={2}>
         <Button type="submit" variant="contained" color="primary">
           Add Meeting
